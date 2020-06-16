@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Chess } from 'chess.js';
 
 const useChess = ({ onLegalMove, onIllegalMove, onGameOver } = {}) => {
