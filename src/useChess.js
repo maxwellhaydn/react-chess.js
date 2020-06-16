@@ -26,7 +26,13 @@ const useChess = ({ onLegalMove, onIllegalMove, onGameOver } = {}) => {
         setPosition(game.fen());
     }, [game]);
 
-    return { move: makeMove, history, position, reset };
+    const undo = useCallback(() => {
+        game.undo();
+        setHistory(game.history());
+        setPosition(game.fen());
+    }, [game]);
+
+    return { move: makeMove, history, position, reset, undo };
 };
 
 export { useChess };

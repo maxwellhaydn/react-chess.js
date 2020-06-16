@@ -28,6 +28,7 @@ const mockHistory = jest.fn();
 const mockGameOver = jest.fn();
 const mockFen = jest.fn().mockImplementation(() => INITIAL_FEN);
 const mockReset = jest.fn();
+const mockUndo = jest.fn();
 
 jest.mock('chess.js', () => ({
     Chess: jest.fn().mockImplementation(() => ({
@@ -35,7 +36,8 @@ jest.mock('chess.js', () => ({
         history: mockHistory,
         game_over: mockGameOver,
         fen: mockFen,
-        reset: mockReset
+        reset: mockReset,
+        undo: mockUndo
     }))
 }));
 
@@ -187,6 +189,27 @@ describe('useChess', () => {
                 .to.have.prop('history').deep.equal([]);
             expect(wrapper.find(TestComponent))
                 .to.have.prop('position').equal(INITIAL_FEN);
+        });
+
+    });
+
+    describe('undo', () => {
+
+        it('should update the history and board position', () => {
+            mockHistory.mockImplementation(() => ['e4', 'e5']);
+            mockFen.mockImplementation(() => 'foo');
+
+            act(() => {
+                wrapper.find(TestComponent).props().undo();
+            });
+
+            wrapper.update();
+
+            expect(mockUndo).to.have.beenCalledTimes(1);
+            expect(wrapper.find(TestComponent))
+                .to.have.prop('history').deep.equal(['e4', 'e5']);
+            expect(wrapper.find(TestComponent))
+                .to.have.prop('position').equal('foo');
         });
 
     });
