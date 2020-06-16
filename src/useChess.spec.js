@@ -2,6 +2,7 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { shallow } from 'enzyme';
 import { expect } from 'chai';
+import { Chess } from 'chess.js';
 
 import { useChess } from './useChess';
 
@@ -20,9 +21,11 @@ const App = () => {
     return <TestComponent {...props} />;
 };
 
+const mockMove = jest.fn().mockImplementation(move => true);
+
 jest.mock('chess.js', () => ({
     Chess: jest.fn().mockImplementation(() => ({
-        move: move => true,
+        move: mockMove,
         history: () => [],
         game_over: () => false
     }))
@@ -53,16 +56,26 @@ describe('useChess', () => {
 
     describe('move', () => {
 
-        beforeEach(() => {
+        it('should call onLegalMove after a legal move is made', () => {
             act(() => {
                 wrapper.find(TestComponent).props().move('e4');
             });
 
             wrapper.update();
+
+            expect(mockOnLegalMove).to.have.beenCalledWith('e4');
         });
 
-        it('should call onLegalMove after a legal move is made', () => {
-            expect(mockOnLegalMove).to.have.beenCalledWith('e4');
+        it('should call onIllegalMove after an illegal move is made', () => {
+            mockMove.mockImplementation(move => null);
+
+            act(() => {
+                wrapper.find(TestComponent).props().move('e7');
+            });
+
+            wrapper.update();
+
+            expect(mockOnIllegalMove).to.have.beenCalledWith('e7');
         });
 
     });
