@@ -1,0 +1,55 @@
+{
+  "name": "react-chess.js",
+  "version": "1.0.0",
+  "description": "React hooks for the chess.js library",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "npm test -- --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxwellhaydn/react-chess.js.git"
+  },
+  "keywords": [
+    "react",
+    "hooks",
+    "react-hooks",
+    "react-hook",
+    "chess.js",
+    "chess"
+  ],
+  "author": "Max Carey",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/maxwellhaydn/react-chess.js/issues"
+  },
+  "homepage": "https://github.com/maxwellhaydn/react-chess.js#readme",
+  "peerDependencies": {
+    "react": "^16.8.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.10.2",
+    "@babel/preset-env": "^7.10.2",
+    "@babel/preset-react": "^7.10.1",
+    "babel-loader": "^8.1.0",
+    "chai": "^4.2.0",
+    "chai-enzyme": "^1.0.0-beta.1",
+    "chai-jest-mocks": "^1.2.4",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.2",
+    "eslint": "^7.2.0",
+    "eslint-loader": "^4.0.2",
+    "jest": "^26.0.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
+  },
+  "dependencies": {
+    "chess.js": "^0.10.3"
+  },
+  "jest": {
+    "setupFilesAfterEnv": ["<rootDir>/src/setupTests.js"]
+  }
+}
