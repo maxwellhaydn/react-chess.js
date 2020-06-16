@@ -21,15 +21,19 @@ const App = () => {
     return <TestComponent {...props} />;
 };
 
+const INITIAL_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
 const mockMove = jest.fn();
 const mockHistory = jest.fn();
 const mockGameOver = jest.fn();
+const mockFen = jest.fn().mockImplementation(() => INITIAL_FEN);
 
 jest.mock('chess.js', () => ({
     Chess: jest.fn().mockImplementation(() => ({
         move: mockMove,
         history: mockHistory,
-        game_over: mockGameOver
+        game_over: mockGameOver,
+        fen: mockFen
     }))
 }));
 
@@ -53,6 +57,11 @@ describe('useChess', () => {
         it('should return an empty history', () => {
             expect(wrapper.find(TestComponent))
                 .to.have.prop('history').deep.equal([]);
+        });
+
+        it('should return the starting board position', () => {
+            expect(wrapper.find(TestComponent))
+                .to.have.prop('position').equal(INITIAL_FEN);
         });
 
     });
@@ -137,6 +146,24 @@ describe('useChess', () => {
             expect(mockOnIllegalMove).to.have.beenCalledTimes(1);
             expect(wrapper.find(TestComponent))
                 .to.have.prop('history').deep.equal(['e4', 'e5', 'Nf3']);
+        });
+
+        it('should update the board position after a legal move', () => {
+            mockHistory.mockImplementation(() => ['e4']);
+            mockFen.mockImplementation(() =>
+                'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1'
+            );
+
+            act(() => {
+                wrapper.find(TestComponent).props().move('e4');
+            });
+
+            wrapper.update();
+
+            expect(wrapper.find(TestComponent))
+                .to.have.prop('position').equal(
+                    'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1'
+                );
         });
 
     });
