@@ -38,6 +38,7 @@ describe('useChess', () => {
     let wrapper;
 
     beforeEach(() => {
+        jest.clearAllMocks();
         wrapper = shallow(<App />);
     });
 
@@ -110,6 +111,32 @@ describe('useChess', () => {
 
             expect(mockOnLegalMove).to.have.beenCalledWith('e4');
             expect(mockOnGameOver).to.have.beenCalled();
+        });
+
+        it('should update the history after a series of moves', () => {
+            mockMove.mockImplementationOnce(move => true)
+                    .mockImplementationOnce(move => true)
+                    .mockImplementationOnce(move => null)
+                    .mockImplementationOnce(move => true);
+
+            mockHistory.mockImplementationOnce(() => ['e4'])
+                       .mockImplementationOnce(() => ['e4', 'e5'])
+                       .mockImplementationOnce(() => ['e4', 'e5', 'Nf3'])
+
+            act(() => {
+                const move = wrapper.find(TestComponent).prop('move');
+                move('e4');
+                move('e5');
+                move('Ba8');
+                move('Nf3');
+            });
+
+            wrapper.update();
+
+            expect(mockOnLegalMove).to.have.beenCalledTimes(3);
+            expect(mockOnIllegalMove).to.have.beenCalledTimes(1);
+            expect(wrapper.find(TestComponent))
+                .to.have.prop('history').deep.equal(['e4', 'e5', 'Nf3']);
         });
 
     });
