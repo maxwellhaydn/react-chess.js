@@ -23,12 +23,13 @@ const App = () => {
 
 const mockMove = jest.fn();
 const mockHistory = jest.fn();
+const mockGameOver = jest.fn();
 
 jest.mock('chess.js', () => ({
     Chess: jest.fn().mockImplementation(() => ({
         move: mockMove,
         history: mockHistory,
-        game_over: () => false
+        game_over: mockGameOver
     }))
 }));
 
@@ -60,6 +61,7 @@ describe('useChess', () => {
         beforeEach(() => {
             mockMove.mockImplementation(move => true);
             mockHistory.mockImplementation(() => []);
+            mockGameOver.mockImplementation(() => false);
         });
 
         it('should call onLegalMove after a legal move is made', () => {
@@ -95,6 +97,19 @@ describe('useChess', () => {
 
             expect(wrapper.find(TestComponent))
                 .to.have.prop('history').deep.equal(['e4']);
+        });
+
+        it('should call onGameOver when the game is over', () => {
+            mockGameOver.mockImplementation(() => true);
+
+            act(() => {
+                wrapper.find(TestComponent).props().move('e4');
+            });
+
+            wrapper.update();
+
+            expect(mockOnLegalMove).to.have.beenCalledWith('e4');
+            expect(mockOnGameOver).to.have.beenCalled();
         });
 
     });
