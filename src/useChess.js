@@ -20,7 +20,13 @@ const useChess = ({ onLegalMove, onIllegalMove, onGameOver } = {}) => {
         if (onIllegalMove) onIllegalMove(move);
     }, [game, onGameOver, onLegalMove, onIllegalMove, setHistory]);
 
-    return { move: makeMove, history, position };
+    const reset = useCallback(() => {
+        game.reset();
+        setHistory(game.history());
+        setPosition(game.fen());
+    }, [game]);
+
+    return { move: makeMove, history, position, reset };
 };
 
 export { useChess };

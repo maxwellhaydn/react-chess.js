@@ -27,13 +27,15 @@ const mockMove = jest.fn();
 const mockHistory = jest.fn();
 const mockGameOver = jest.fn();
 const mockFen = jest.fn().mockImplementation(() => INITIAL_FEN);
+const mockReset = jest.fn();
 
 jest.mock('chess.js', () => ({
     Chess: jest.fn().mockImplementation(() => ({
         move: mockMove,
         history: mockHistory,
         game_over: mockGameOver,
-        fen: mockFen
+        fen: mockFen,
+        reset: mockReset
     }))
 }));
 
@@ -164,6 +166,27 @@ describe('useChess', () => {
                 .to.have.prop('position').equal(
                     'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1'
                 );
+        });
+
+    });
+
+    describe('reset', () => {
+
+        it('should clear the history and reset the board position', () => {
+            mockHistory.mockImplementation(() => []);
+            mockFen.mockImplementation(() => INITIAL_FEN);
+
+            act(() => {
+                wrapper.find(TestComponent).props().reset();
+            });
+
+            wrapper.update();
+
+            expect(mockReset).to.have.beenCalledTimes(1);
+            expect(wrapper.find(TestComponent))
+                .to.have.prop('history').deep.equal([]);
+            expect(wrapper.find(TestComponent))
+                .to.have.prop('position').equal(INITIAL_FEN);
         });
 
     });
