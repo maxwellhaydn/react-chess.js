@@ -65,7 +65,7 @@ describe('useChess', () => {
 
         it('should return the starting board position', () => {
             expect(wrapper.find(TestComponent))
-                .to.have.prop('position').equal(INITIAL_FEN);
+                .to.have.prop('fen').equal(INITIAL_FEN);
         });
 
     });
@@ -165,7 +165,7 @@ describe('useChess', () => {
             wrapper.update();
 
             expect(wrapper.find(TestComponent))
-                .to.have.prop('position').equal(
+                .to.have.prop('fen').equal(
                     'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1'
                 );
         });
@@ -188,7 +188,7 @@ describe('useChess', () => {
             expect(wrapper.find(TestComponent))
                 .to.have.prop('history').deep.equal([]);
             expect(wrapper.find(TestComponent))
-                .to.have.prop('position').equal(INITIAL_FEN);
+                .to.have.prop('fen').equal(INITIAL_FEN);
         });
 
     });
@@ -209,7 +209,7 @@ describe('useChess', () => {
             expect(wrapper.find(TestComponent))
                 .to.have.prop('history').deep.equal(['e4', 'e5']);
             expect(wrapper.find(TestComponent))
-                .to.have.prop('position').equal('foo');
+                .to.have.prop('fen').equal('foo');
         });
 
     });
