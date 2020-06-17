@@ -1,38 +1,45 @@
-import { useCallback, useRef, useState } from 'react';
+import { useReducer, useRef } from 'react';
 import { Chess } from 'chess.js';
 
 const useChess = ({ onLegalMove, onIllegalMove, onGameOver } = {}) => {
     const game = useRef(new Chess());
-    const [history, setHistory] = useState([]);
-    const [fen, setFen] = useState(game.current.fen());
 
-    const makeMove = useCallback((move) => {
-        if (game.current.move(move)) {
-            setHistory(game.current.history());
-            setFen(game.current.fen());
+    const initialState = {
+        history: game.current.history(),
+        fen: game.current.fen()
+    };
 
-            if (onLegalMove) onLegalMove(move);
-            if (game.current.game_over() && onGameOver) onGameOver();
+    const [state, dispatch] = useReducer((state, action) => {
+        switch (action.type) {
+            case 'move':
+                if (game.current.move(action.payload)) {
+                    if (onLegalMove) onLegalMove(action.payload);
+                    if (game.current.game_over() && onGameOver) onGameOver();
+                }
+                else {
+                    if (onIllegalMove) onIllegalMove(action.payload);
+                }
 
-            return;
+                break;
+            case 'reset':
+                game.current.reset();
+                break;
+            case 'undo':
+                game.current.undo();
+                break;
+            default:
+                throw new Error(`Unknown action type: ${action.type}`);
         }
 
-        if (onIllegalMove) onIllegalMove(move);
-    }, [game, onGameOver, onLegalMove, onIllegalMove, setHistory]);
+        return { history: game.current.history(), fen: game.current.fen() };
+    }, initialState);
 
-    const reset = useCallback(() => {
-        game.current.reset();
-        setHistory(game.current.history());
-        setFen(game.current.fen());
-    }, [game]);
-
-    const undo = useCallback(() => {
-        game.current.undo();
-        setHistory(game.current.history());
-        setFen(game.current.fen());
-    }, [game]);
-
-    return { move: makeMove, history, fen, reset, undo };
+    return {
+        move: (move) => dispatch({ type: 'move', payload: move }),
+        reset: () => dispatch({ type: 'reset' }),
+        undo: () => dispatch({ type: 'undo' }),
+        ...state
+    };
 };
 
 export { useChess };
