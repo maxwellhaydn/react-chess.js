@@ -92,6 +92,7 @@ describe('useChess', () => {
             wrapper.update();
 
             expect(mockOnLegalMove).to.have.beenCalledWith('e4');
+            expect(mockOnIllegalMove).to.not.have.beenCalled();
         });
 
         it('should call onIllegalMove after an illegal move is made', () => {
@@ -104,6 +105,7 @@ describe('useChess', () => {
             wrapper.update();
 
             expect(mockOnIllegalMove).to.have.beenCalledWith('e7');
+            expect(mockOnLegalMove).to.not.have.beenCalled();
         });
 
         it('should update the move history after a legal move', () => {

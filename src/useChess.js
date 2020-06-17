@@ -1,4 +1,4 @@
-import { useReducer, useRef } from 'react';
+import { useCallback, useReducer, useRef } from 'react';
 import { isNode } from 'browser-or-node';
 
 let Chess;
@@ -29,7 +29,8 @@ const useChess = ({ onLegalMove, onIllegalMove, onGameOver } = {}) => {
         turn: game.current.turn()
     };
 
-    const [state, dispatch] = useReducer((state, action) => {
+    // TODO: reducers shouldn't have side effects
+    const reducer = useCallback((state, action) => {
         switch (action.type) {
             case 'move':
                 if (game.current.move(action.payload)) {
@@ -56,7 +57,9 @@ const useChess = ({ onLegalMove, onIllegalMove, onGameOver } = {}) => {
             fen: game.current.fen(),
             turn: game.current.turn()
         };
-    }, initialState);
+    }, [game]);
+
+    const [state, dispatch] = useReducer(reducer, initialState);
 
     return {
         move: (move) => dispatch({ type: 'move', payload: move }),
