@@ -1,5 +1,24 @@
 import { useReducer, useRef } from 'react';
-import { Chess } from 'chess.js';
+import { isNode } from 'browser-or-node';
+
+let Chess;
+
+/**
+ * In CommonJS environments, chess.js exports an object with the Chess
+ * constructor as a property, while on AMD environments it exports the Chess
+ * constructor directly. Webpack supports both CommonJS and AMD. Due to an issue
+ * in chess.js (https://github.com/jhlywa/chess.js/issues/196), you get the AMD
+ * export with Webpack, so tests running in Node and code bundled with Webpack
+ * cannot both use the same import signature. The following is a temporary
+ * workaround until the issue in chess.js is resolved.
+ */
+if (isNode) {
+    const chess = require('chess.js');
+    Chess = chess.Chess;
+}
+else {
+    Chess = require('chess.js');
+}
 
 const useChess = ({ onLegalMove, onIllegalMove, onGameOver } = {}) => {
     const game = useRef(new Chess());

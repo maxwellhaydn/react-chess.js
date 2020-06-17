@@ -2,10 +2,11 @@
   "name": "react-chess.js",
   "version": "1.0.0",
   "description": "React hooks for the chess.js library",
-  "main": "index.js",
+  "main": "dist/react-chess.js",
   "scripts": {
     "test": "jest",
-    "test:watch": "npm test -- --watch"
+    "test:watch": "npm test -- --watch",
+    "build": "webpack-cli --mode production"
   },
   "repository": {
     "type": "git",
@@ -47,9 +48,12 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
+    "browser-or-node": "^1.2.1",
     "chess.js": "^0.10.3"
   },
   "jest": {
-    "setupFilesAfterEnv": ["<rootDir>/src/setupTests.js"]
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setupTests.js"
+    ]
   }
 }
