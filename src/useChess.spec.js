@@ -23,10 +23,10 @@ const App = () => {
 
 const INITIAL_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
-const mockMove = jest.fn();
-const mockHistory = jest.fn();
-const mockGameOver = jest.fn();
-const mockFen = jest.fn().mockImplementation(() => INITIAL_FEN);
+const mockMove = jest.fn().mockReturnValue(true);
+const mockHistory = jest.fn().mockReturnValue([]);
+const mockGameOver = jest.fn().mockReturnValue(false);
+const mockFen = jest.fn().mockReturnValue(INITIAL_FEN);
 const mockReset = jest.fn();
 const mockUndo = jest.fn();
 
@@ -73,9 +73,9 @@ describe('useChess', () => {
     describe('move', () => {
 
         beforeEach(() => {
-            mockMove.mockImplementation(move => true);
-            mockHistory.mockImplementation(() => []);
-            mockGameOver.mockImplementation(() => false);
+            mockMove.mockReturnValue(true);
+            mockHistory.mockReturnValue([]);
+            mockGameOver.mockReturnValue(false);
         });
 
         it('should call onLegalMove after a legal move is made', () => {
@@ -89,7 +89,7 @@ describe('useChess', () => {
         });
 
         it('should call onIllegalMove after an illegal move is made', () => {
-            mockMove.mockImplementation(move => null);
+            mockMove.mockReturnValue(null);
 
             act(() => {
                 wrapper.find(TestComponent).props().move('e7');
@@ -101,7 +101,7 @@ describe('useChess', () => {
         });
 
         it('should update the move history after a legal move', () => {
-            mockHistory.mockImplementation(() => ['e4']);
+            mockHistory.mockReturnValue(['e4']);
 
             act(() => {
                 wrapper.find(TestComponent).props().move('e4');
@@ -114,37 +114,35 @@ describe('useChess', () => {
         });
 
         it('should call onGameOver when the game is over', () => {
-            mockGameOver.mockImplementation(() => true);
+            mockGameOver.mockReturnValue(true);
 
             act(() => {
-                wrapper.find(TestComponent).props().move('e4');
+                wrapper.find(TestComponent).props().move('a4');
             });
 
             wrapper.update();
 
-            expect(mockOnLegalMove).to.have.beenCalledWith('e4');
+            expect(mockOnLegalMove).to.have.beenCalledWith('a4');
             expect(mockOnGameOver).to.have.beenCalled();
         });
 
         it('should update the history after a series of moves', () => {
-            mockMove.mockImplementationOnce(move => true)
-                    .mockImplementationOnce(move => true)
-                    .mockImplementationOnce(move => null)
-                    .mockImplementationOnce(move => true);
+            mockMove.mockReturnValueOnce(true)
+                .mockReturnValueOnce(true)
+                .mockReturnValueOnce(null)
+                .mockReturnValueOnce(true);
 
-            mockHistory.mockImplementationOnce(() => ['e4'])
-                       .mockImplementationOnce(() => ['e4', 'e5'])
-                       .mockImplementationOnce(() => ['e4', 'e5', 'Nf3'])
+            const history = [];
+            mockHistory.mockReturnValue(history);
 
-            act(() => {
-                const move = wrapper.find(TestComponent).prop('move');
-                move('e4');
-                move('e5');
-                move('Ba8');
-                move('Nf3');
+            ['e4', 'e5', 'Ba8', 'Nf3'].forEach(move => {
+                if (move !== 'Ba8') history.push(move);
+                act(() => {
+                    wrapper.find(TestComponent).props().move(move);
+                });
+
+                wrapper.update();
             });
-
-            wrapper.update();
 
             expect(mockOnLegalMove).to.have.beenCalledTimes(3);
             expect(mockOnIllegalMove).to.have.beenCalledTimes(1);
