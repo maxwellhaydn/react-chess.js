@@ -4,7 +4,7 @@ import { shallow } from 'enzyme';
 import { expect } from 'chai';
 import { Chess } from 'chess.js';
 
-import { useChess } from './useChess';
+import useChess from './useChess';
 
 const TestComponent = (props) => null;
 

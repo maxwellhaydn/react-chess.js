@@ -47,4 +47,4 @@ const useChess = ({ onLegalMove, onIllegalMove, onGameOver } = {}) => {
     };
 };
 
-export { useChess };
+export default useChess;
