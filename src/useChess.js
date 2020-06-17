@@ -6,7 +6,8 @@ const useChess = ({ onLegalMove, onIllegalMove, onGameOver } = {}) => {
 
     const initialState = {
         history: game.current.history(),
-        fen: game.current.fen()
+        fen: game.current.fen(),
+        turn: game.current.turn()
     };
 
     const [state, dispatch] = useReducer((state, action) => {
@@ -31,7 +32,11 @@ const useChess = ({ onLegalMove, onIllegalMove, onGameOver } = {}) => {
                 throw new Error(`Unknown action type: ${action.type}`);
         }
 
-        return { history: game.current.history(), fen: game.current.fen() };
+        return {
+            history: game.current.history(),
+            fen: game.current.fen(),
+            turn: game.current.turn()
+        };
     }, initialState);
 
     return {

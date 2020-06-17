@@ -29,6 +29,7 @@ const mockGameOver = jest.fn().mockReturnValue(false);
 const mockFen = jest.fn().mockReturnValue(INITIAL_FEN);
 const mockReset = jest.fn();
 const mockUndo = jest.fn();
+const mockTurn = jest.fn().mockReturnValue('w');
 
 jest.mock('chess.js', () => ({
     Chess: jest.fn().mockImplementation(() => ({
@@ -37,7 +38,8 @@ jest.mock('chess.js', () => ({
         game_over: mockGameOver,
         fen: mockFen,
         reset: mockReset,
-        undo: mockUndo
+        undo: mockUndo,
+        turn: mockTurn
     }))
 }));
 
@@ -66,6 +68,10 @@ describe('useChess', () => {
         it('should return the starting board position', () => {
             expect(wrapper.find(TestComponent))
                 .to.have.prop('fen').equal(INITIAL_FEN);
+        });
+
+        it('should return the player whose turn it is', () => {
+            expect(wrapper.find(TestComponent)).to.have.prop('turn').equal('w');
         });
 
     });
@@ -151,8 +157,8 @@ describe('useChess', () => {
         });
 
         it('should update the board position after a legal move', () => {
-            mockHistory.mockImplementation(() => ['e4']);
-            mockFen.mockImplementation(() =>
+            mockHistory.mockReturnValue(['e4']);
+            mockFen.mockReturnValue(
                 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1'
             );
 
@@ -168,13 +174,26 @@ describe('useChess', () => {
                 );
         });
 
+        it('should update the turn after a legal move', () => {
+            mockTurn.mockReturnValue('b');
+
+            act(() => {
+                wrapper.find(TestComponent).props().move('e4');
+            });
+
+            wrapper.update();
+
+            expect(wrapper.find(TestComponent)).to.have.prop('turn').equal('b');
+        });
+
     });
 
     describe('reset', () => {
 
-        it('should clear the history and reset the board position', () => {
-            mockHistory.mockImplementation(() => []);
-            mockFen.mockImplementation(() => INITIAL_FEN);
+        it('should reset the history, board position, and turn', () => {
+            mockHistory.mockReturnValue(['blank', 'history']);
+            mockFen.mockReturnValue('starting fen');
+            mockTurn.mockReturnValue('starting player');
 
             act(() => {
                 wrapper.find(TestComponent).props().reset();
@@ -184,18 +203,21 @@ describe('useChess', () => {
 
             expect(mockReset).to.have.beenCalledTimes(1);
             expect(wrapper.find(TestComponent))
-                .to.have.prop('history').deep.equal([]);
+                .to.have.prop('history').deep.equal(['blank', 'history']);
             expect(wrapper.find(TestComponent))
-                .to.have.prop('fen').equal(INITIAL_FEN);
+                .to.have.prop('fen').equal('starting fen');
+            expect(wrapper.find(TestComponent))
+                .to.have.prop('turn').equal('starting player');
         });
 
     });
 
     describe('undo', () => {
 
-        it('should update the history and board position', () => {
-            mockHistory.mockImplementation(() => ['e4', 'e5']);
-            mockFen.mockImplementation(() => 'foo');
+        it('should update the history, board position, and turn', () => {
+            mockHistory.mockReturnValue(['e4', 'e5']);
+            mockFen.mockReturnValue('foo');
+            mockTurn.mockReturnValue('previous player');
 
             act(() => {
                 wrapper.find(TestComponent).props().undo();
@@ -208,6 +230,8 @@ describe('useChess', () => {
                 .to.have.prop('history').deep.equal(['e4', 'e5']);
             expect(wrapper.find(TestComponent))
                 .to.have.prop('fen').equal('foo');
+            expect(wrapper.find(TestComponent))
+                .to.have.prop('turn').equal('previous player');
         });
 
     });
