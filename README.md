@@ -2,13 +2,11 @@
 
 React hook for the chess.js library.
 
-## Description
-
 react-chess.js provides a custom React hook, `useChess`, that makes it easier to
 integrate the popular [chess.js](https://github.com/jhlywa/chess.js) library
 into your React app. chess.js provides move validation, PGN import/export, piece
 movement, and check/checkmate/stalemate/draw detection, but no chessboard (for
-that see [chessboardjsx](https://github.com/willb335/chessboardjsx, for
+that see [chessboardjsx](https://github.com/willb335/chessboardjsx), for
 example).
 
 react-chess.js hides most of the imperative code in chess.js so you can focus on
