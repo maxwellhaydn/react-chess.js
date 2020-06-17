@@ -29,44 +29,48 @@ const useChess = ({ onLegalMove, onIllegalMove, onGameOver } = {}) => {
         turn: game.current.turn()
     };
 
-    // TODO: reducers shouldn't have side effects
+    // Used to update the values of props after every function that mutates the
+    // Chess object state
     const reducer = useCallback((state, action) => {
         switch (action.type) {
-            case 'move':
-                if (game.current.move(action.payload)) {
-                    if (onLegalMove) onLegalMove(action.payload);
-                    if (game.current.game_over() && onGameOver) onGameOver();
-                }
-                else {
-                    if (onIllegalMove) onIllegalMove(action.payload);
-                }
-
-                break;
-            case 'reset':
-                game.current.reset();
-                break;
-            case 'undo':
-                game.current.undo();
-                break;
+            case 'update':
+                return {
+                    history: game.current.history(),
+                    fen: game.current.fen(),
+                    turn: game.current.turn()
+                };
             default:
                 throw new Error(`Unknown action type: ${action.type}`);
         }
-
-        return {
-            history: game.current.history(),
-            fen: game.current.fen(),
-            turn: game.current.turn()
-        };
     }, [game]);
 
     const [state, dispatch] = useReducer(reducer, initialState);
 
-    return {
-        move: (move) => dispatch({ type: 'move', payload: move }),
-        reset: () => dispatch({ type: 'reset' }),
-        undo: () => dispatch({ type: 'undo' }),
-        ...state
-    };
+    const makeMove = useCallback((move) => {
+        if (game.current.move(move)) {
+            dispatch({ type: 'update' });
+
+            if (onLegalMove) onLegalMove(move);
+            if (game.current.game_over() && onGameOver) onGameOver();
+
+            return;
+        }
+
+        if (onIllegalMove) onIllegalMove(move);
+
+    }, [game, onLegalMove, onIllegalMove, onGameOver]);
+
+    const reset = useCallback(() => {
+        game.current.reset();
+        dispatch({ type: 'update' });
+    }, [game]);
+
+    const undo = useCallback(() => {
+        game.current.undo();
+        dispatch({ type: 'update' });
+    }, [game]);
+
+    return { move: makeMove, reset, undo, ...state };
 };
 
 export default useChess;
