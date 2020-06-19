@@ -48,7 +48,6 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
-    "browser-or-node": "^1.2.1",
     "chess.js": "^0.10.3"
   },
   "jest": {
