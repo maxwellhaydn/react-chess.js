@@ -35,6 +35,12 @@ module.exports = {
                         babelrc: true
                     }
                 }
+            },
+            {
+                test: require.resolve('chess.js'),
+                parser: {
+                    amd: false
+                }
             }
         ]
     }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { act } from 'react-dom/test-utils';
-import { shallow } from 'enzyme';
+import { mount } from 'enzyme';
 import { expect } from 'chai';
 import { Chess } from 'chess.js';
 
@@ -49,7 +49,7 @@ describe('useChess', () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
-        wrapper = shallow(<App />);
+        wrapper = mount(<App />);
     });
 
     describe('initial props', () => {

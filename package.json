@@ -1,6 +1,6 @@
 {
   "name": "react-chess.js",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "React hooks for the chess.js library",
   "main": "dist/react-chess.js",
   "scripts": {
@@ -48,7 +48,6 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
-    "browser-or-node": "^1.2.1",
     "chess.js": "^0.10.3"
   },
   "jest": {
