@@ -1,14 +1,31 @@
-import { useCallback, useReducer, useRef } from 'react';
+import { useCallback, useEffect, useReducer, useRef } from 'react';
 import { Chess } from 'chess.js';
 
 const useChess = ({ onLegalMove, onIllegalMove, onGameOver } = {}) => {
-    const game = useRef(new Chess());
+    const game = useRef(null);
 
-    const initialState = {
-        history: game.current.history(),
-        fen: game.current.fen(),
-        turn: game.current.turn()
+    // Lazily instantiate Chess object only once
+    const getGame = () => {
+        if (game.current === null) {
+            game.current = new Chess();
+        }
+
+        return game.current;
     };
+
+    // Clean up Chess object on unmount
+    useEffect(() => {
+        return () => {
+            if (game.current) game.current.destroy();
+        };
+    }, [game]);
+
+    // Lazily instantiate initial state
+    const getInitialState = () => ({
+        history: getGame().history(),
+        fen: getGame().fen(),
+        turn: getGame().turn()
+    });
 
     // Used to update the values of props after every function that mutates the
     // Chess object state
@@ -16,23 +33,23 @@ const useChess = ({ onLegalMove, onIllegalMove, onGameOver } = {}) => {
         switch (action.type) {
             case 'update':
                 return {
-                    history: game.current.history(),
-                    fen: game.current.fen(),
-                    turn: game.current.turn()
+                    history: getGame().history(),
+                    fen: getGame().fen(),
+                    turn: getGame().turn()
                 };
             default:
                 throw new Error(`Unknown action type: ${action.type}`);
         }
     }, [game]);
 
-    const [state, dispatch] = useReducer(reducer, initialState);
+    const [state, dispatch] = useReducer(reducer, undefined, getInitialState);
 
     const makeMove = useCallback((move) => {
-        if (game.current.move(move)) {
+        if (getGame().move(move)) {
             dispatch({ type: 'update' });
 
             if (onLegalMove) onLegalMove(move);
-            if (game.current.game_over() && onGameOver) onGameOver();
+            if (getGame().game_over() && onGameOver) onGameOver();
 
             return;
         }
@@ -42,12 +59,12 @@ const useChess = ({ onLegalMove, onIllegalMove, onGameOver } = {}) => {
     }, [game, onLegalMove, onIllegalMove, onGameOver]);
 
     const reset = useCallback(() => {
-        game.current.reset();
+        getGame().reset();
         dispatch({ type: 'update' });
     }, [game]);
 
     const undo = useCallback(() => {
-        game.current.undo();
+        getGame().undo();
         dispatch({ type: 'update' });
     }, [game]);
 
