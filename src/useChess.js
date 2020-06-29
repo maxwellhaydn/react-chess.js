@@ -13,7 +13,8 @@ const useChess = ({
     onLegalMove,
     onIllegalMove,
     onGameOver,
-    onCheck
+    onCheck,
+    onCheckmate,
 } = {}) => {
     const game = useRef(null);
 
@@ -64,6 +65,7 @@ const useChess = ({
             if (onLegalMove) onLegalMove(move);
             if (onGameOver && getGame().game_over()) onGameOver();
             if (onCheck && getGame().in_check()) onCheck();
+            if (onCheckmate && getGame().in_checkmate()) onCheckmate();
 
             return;
         }
