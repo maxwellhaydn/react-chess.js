@@ -1,7 +1,20 @@
 import { useCallback, useEffect, useReducer, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { Chess } from 'chess.js';
 
-const useChess = ({ onLegalMove, onIllegalMove, onGameOver } = {}) => {
+const propTypes = {
+    onLegalMove: PropTypes.function,
+    onIllegalMove: PropTypes.function,
+    onGameOver: PropTypes.function,
+    onCheck: PropTypes.function
+};
+
+const useChess = ({
+    onLegalMove,
+    onIllegalMove,
+    onGameOver,
+    onCheck
+} = {}) => {
     const game = useRef(null);
 
     // Lazily instantiate Chess object only once
@@ -49,7 +62,8 @@ const useChess = ({ onLegalMove, onIllegalMove, onGameOver } = {}) => {
             dispatch({ type: 'update' });
 
             if (onLegalMove) onLegalMove(move);
-            if (getGame().game_over() && onGameOver) onGameOver();
+            if (onGameOver && getGame().game_over()) onGameOver();
+            if (onCheck && getGame().in_check()) onCheck();
 
             return;
         }
@@ -70,5 +84,7 @@ const useChess = ({ onLegalMove, onIllegalMove, onGameOver } = {}) => {
 
     return { move: makeMove, reset, undo, ...state };
 };
+
+useChess.propTypes = propTypes;
 
 export default useChess;
