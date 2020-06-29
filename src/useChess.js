@@ -9,6 +9,7 @@ const propTypes = {
     onCheck: PropTypes.function,
     onCheckmate: PropTypes.function,
     onDraw: PropTypes.function,
+    onStalemate: PropTypes.function,
 };
 
 const useChess = ({
@@ -18,6 +19,7 @@ const useChess = ({
     onCheck,
     onCheckmate,
     onDraw,
+    onStalemate,
 } = {}) => {
     const game = useRef(null);
 
@@ -70,6 +72,7 @@ const useChess = ({
             if (onCheck && getGame().in_check()) onCheck();
             if (onCheckmate && getGame().in_checkmate()) onCheckmate();
             if (onDraw && getGame().in_draw()) onDraw();
+            if (onStalemate && getGame().in_stalemate()) onStalemate();
 
             return;
         }
@@ -84,6 +87,7 @@ const useChess = ({
         onCheck,
         onCheckmate,
         onDraw,
+        onStalemate,
     ]);
 
     const reset = useCallback(() => {

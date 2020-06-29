@@ -14,6 +14,7 @@ const mockOnGameOver = jest.fn();
 const mockOnCheck = jest.fn();
 const mockOnCheckmate = jest.fn();
 const mockOnDraw = jest.fn();
+const mockOnStalemate = jest.fn();
 
 const App = () => {
     const props = useChess({
@@ -23,6 +24,7 @@ const App = () => {
 	onCheck: mockOnCheck,
         onCheckmate: mockOnCheckmate,
         onDraw: mockOnDraw,
+        onStalemate: mockOnStalemate,
     });
     return <TestComponent {...props} />;
 };
@@ -39,6 +41,7 @@ const mockTurn = jest.fn().mockReturnValue('w');
 const mockCheck = jest.fn().mockReturnValue(false);
 const mockCheckmate = jest.fn().mockReturnValue(false);
 const mockDraw = jest.fn().mockReturnValue(false);
+const mockStalemate = jest.fn().mockReturnValue(false);
 
 jest.mock('chess.js', () => ({
     Chess: jest.fn().mockImplementation(() => ({
@@ -48,6 +51,7 @@ jest.mock('chess.js', () => ({
         in_check: mockCheck,
         in_checkmate: mockCheckmate,
         in_draw: mockDraw,
+        in_stalemate: mockStalemate,
         fen: mockFen,
         reset: mockReset,
         undo: mockUndo,
@@ -183,6 +187,19 @@ describe('useChess', () => {
 
             expect(mockOnLegalMove).to.have.beenCalledWith('Bb6');
             expect(mockOnDraw).to.have.beenCalled();
+        });
+
+        it('should call onStalemate when the game ends in a stalemate', () => {
+            mockStalemate.mockReturnValue(true);
+
+            act(() => {
+                wrapper.find(TestComponent).props().move('e7');
+            });
+
+            wrapper.update();
+
+            expect(mockOnLegalMove).to.have.beenCalledWith('e7');
+            expect(mockOnStalemate).to.have.beenCalled();
         });
 
         it('should update the history after a series of moves', () => {
