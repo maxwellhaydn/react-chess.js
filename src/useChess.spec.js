@@ -15,6 +15,7 @@ const mockOnCheck = jest.fn();
 const mockOnCheckmate = jest.fn();
 const mockOnDraw = jest.fn();
 const mockOnStalemate = jest.fn();
+const mockOnThreefoldRepetition = jest.fn();
 
 const App = () => {
     const props = useChess({
@@ -25,6 +26,7 @@ const App = () => {
         onCheckmate: mockOnCheckmate,
         onDraw: mockOnDraw,
         onStalemate: mockOnStalemate,
+        onThreefoldRepetition: mockOnThreefoldRepetition,
     });
     return <TestComponent {...props} />;
 };
@@ -42,6 +44,7 @@ const mockCheck = jest.fn().mockReturnValue(false);
 const mockCheckmate = jest.fn().mockReturnValue(false);
 const mockDraw = jest.fn().mockReturnValue(false);
 const mockStalemate = jest.fn().mockReturnValue(false);
+const mockThreefoldRepetition = jest.fn().mockReturnValue(false);
 
 jest.mock('chess.js', () => ({
     Chess: jest.fn().mockImplementation(() => ({
@@ -52,6 +55,7 @@ jest.mock('chess.js', () => ({
         in_checkmate: mockCheckmate,
         in_draw: mockDraw,
         in_stalemate: mockStalemate,
+        in_threefold_repetition: mockThreefoldRepetition,
         fen: mockFen,
         reset: mockReset,
         undo: mockUndo,
@@ -200,6 +204,19 @@ describe('useChess', () => {
 
             expect(mockOnLegalMove).to.have.beenCalledWith('e7');
             expect(mockOnStalemate).to.have.beenCalled();
+        });
+
+        it('should call onThreefoldRepetition when the game ends due to threefold repetition', () => {
+            mockThreefoldRepetition.mockReturnValue(true);
+
+            act(() => {
+                wrapper.find(TestComponent).props().move('Kc1');
+            });
+
+            wrapper.update();
+
+            expect(mockOnLegalMove).to.have.beenCalledWith('Kc1');
+            expect(mockOnThreefoldRepetition).to.have.beenCalled();
         });
 
         it('should update the history after a series of moves', () => {

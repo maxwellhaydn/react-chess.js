@@ -10,17 +10,21 @@ const propTypes = {
     onCheckmate: PropTypes.function,
     onDraw: PropTypes.function,
     onStalemate: PropTypes.function,
+    onThreefoldRepetition: PropTypes.function,
 };
 
-const useChess = ({
-    onLegalMove,
-    onIllegalMove,
-    onGameOver,
-    onCheck,
-    onCheckmate,
-    onDraw,
-    onStalemate,
-} = {}) => {
+// Callbacks that can be triggered after a legal move, mapped to the
+// corresponding chess.js methods that indicate whether they should be triggered
+const legalMoveEffects = {
+    onGameOver: 'game_over',
+    onCheck: 'in_check',
+    onCheckmate: 'in_checkmate',
+    onDraw: 'in_draw',
+    onStalemate: 'in_stalemate',
+    onThreefoldRepetition: 'in_threefold_repetition',
+};
+
+const useChess = (props) => {
     const game = useRef(null);
 
     // Lazily instantiate Chess object only once
@@ -67,28 +71,21 @@ const useChess = ({
         if (getGame().move(move)) {
             dispatch({ type: 'update' });
 
-            if (onLegalMove) onLegalMove(move);
-            if (onGameOver && getGame().game_over()) onGameOver();
-            if (onCheck && getGame().in_check()) onCheck();
-            if (onCheckmate && getGame().in_checkmate()) onCheckmate();
-            if (onDraw && getGame().in_draw()) onDraw();
-            if (onStalemate && getGame().in_stalemate()) onStalemate();
+            if (props.onLegalMove) props.onLegalMove(move);
+
+            // Call handlers for check, checkmate, draw, stalemate, etc.
+            for (const [handler, method] of Object.entries(legalMoveEffects)) {
+                if (props[handler] && getGame()[method]()) {
+                    props[handler]();
+                }
+            }
 
             return;
         }
 
-        if (onIllegalMove) onIllegalMove(move);
+        if (props.onIllegalMove) props.onIllegalMove(move);
 
-    }, [
-        game,
-        onLegalMove,
-        onIllegalMove,
-        onGameOver,
-        onCheck,
-        onCheckmate,
-        onDraw,
-        onStalemate,
-    ]);
+    }, [game, props]);
 
     const reset = useCallback(() => {
         getGame().reset();
