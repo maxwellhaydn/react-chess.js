@@ -1,17 +1,16 @@
 # react-chess.js
 
-React hook for the chess.js library.
+React hook for the [chess.js][1] library.
 
 react-chess.js provides a custom React hook, `useChess`, that makes it easier to
-integrate the popular [chess.js](https://github.com/jhlywa/chess.js) library
-into your React app. chess.js provides move validation, PGN import/export, piece
-movement, and check/checkmate/stalemate/draw detection, but no chessboard (for
-that see [chessboardjsx](https://github.com/willb335/chessboardjsx), for
-example).
+integrate the popular [chess.js][1] library into your React app. [chess.js][1]
+provides move validation, PGN import/export, piece movement, and
+check/checkmate/stalemate/draw detection, but no chessboard (for that see
+[chessboardjsx](https://github.com/willb335/chessboardjsx), for example).
 
-react-chess.js hides most of the imperative code in chess.js so you can focus on
-building declarative React components. Currently it only exposes a portion of
-the chess.js API, including:
+react-chess.js hides most of the imperative code in [chess.js][1] so you can
+focus on building declarative React components. Currently it only exposes a
+portion of the [chess.js][1] API, including:
 
 * piece movement
 * move validation
@@ -41,21 +40,14 @@ from the CDN and use it globally via `window.useChess`:
 
 ## Usage
 
-The following example shows some of the features of the `useChess` hook.
-Each time you click the "Move" button, a move will be attempted, in the order
-e4, e5, Ba8, and Nf3. When a move is made, a message is logged to the console
-indicating whether it was legal or illegal. The current board position in
-Forsyth-Edwards notation, the player whose turn it is, and the list of moves
-made so far are shown and updated automatically after each move. Clicking "Undo"
-undoes the last move, while clicking "Reset" resets the board to the starting
-position.
+The following example shows some of the features of the `useChess` hook:
 
     import React from 'react';
     import useChess from 'react-chess.js';
 
-    const App = (props) => {
-        const moves = ['e4', 'e5', 'Ba8', 'Nf3'];
+    const moves = ['e4', 'e5', 'Ba8', 'Nf3'];
 
+    const App = (props) => {
         const { move, history, fen, reset, undo, turn } = useChess({
             onLegalMove: moved => console.log(`Made move: ${moved}`),
             onIllegalMove: moved => console.log(`Illegal move: ${moved}`),
@@ -80,6 +72,14 @@ position.
             </div>
         );
     };
+
+Each time you click the "Move" button, a move will be attempted, in the order
+e4, e5, Ba8, and Nf3. When a move is made, a message is logged to the console
+indicating whether it was legal or illegal. The current board position in
+Forsyth-Edwards notation, the player whose turn it is, and the list of moves
+made so far are shown and updated automatically after each move. Clicking "Undo"
+undoes the last move, while clicking "Reset" resets the board to the starting
+position.
 
 ### Arguments
 
@@ -191,3 +191,5 @@ The current position of the pieces in FEN notation.
 `String`
 
 The player whose turn it is (either 'b' for black or 'w' for white).
+
+[1]: https://github.com/jhlywa/chess.js
