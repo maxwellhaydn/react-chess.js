@@ -11,6 +11,7 @@ const propTypes = {
     onDraw: PropTypes.function,
     onStalemate: PropTypes.function,
     onThreefoldRepetition: PropTypes.function,
+    onInsufficientMaterial: PropTypes.function,
 };
 
 // Callbacks that can be triggered after a legal move, mapped to the
@@ -22,6 +23,7 @@ const legalMoveEffects = {
     onDraw: 'in_draw',
     onStalemate: 'in_stalemate',
     onThreefoldRepetition: 'in_threefold_repetition',
+    onInsufficientMaterial: 'in_threefold_repetition',
 };
 
 const useChess = (props) => {

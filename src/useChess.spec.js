@@ -16,6 +16,7 @@ const mockOnCheckmate = jest.fn();
 const mockOnDraw = jest.fn();
 const mockOnStalemate = jest.fn();
 const mockOnThreefoldRepetition = jest.fn();
+const mockOnInsufficientMaterial = jest.fn();
 
 const App = () => {
     const props = useChess({
@@ -27,6 +28,7 @@ const App = () => {
         onDraw: mockOnDraw,
         onStalemate: mockOnStalemate,
         onThreefoldRepetition: mockOnThreefoldRepetition,
+        onInsufficientMaterial: mockOnInsufficientMaterial,
     });
     return <TestComponent {...props} />;
 };
@@ -45,6 +47,7 @@ const mockCheckmate = jest.fn().mockReturnValue(false);
 const mockDraw = jest.fn().mockReturnValue(false);
 const mockStalemate = jest.fn().mockReturnValue(false);
 const mockThreefoldRepetition = jest.fn().mockReturnValue(false);
+const mockInsufficientMaterial = jest.fn().mockReturnValue(false);
 
 jest.mock('chess.js', () => ({
     Chess: jest.fn().mockImplementation(() => ({
@@ -56,6 +59,7 @@ jest.mock('chess.js', () => ({
         in_draw: mockDraw,
         in_stalemate: mockStalemate,
         in_threefold_repetition: mockThreefoldRepetition,
+        insufficient_material: mockInsufficientMaterial,
         fen: mockFen,
         reset: mockReset,
         undo: mockUndo,
@@ -217,6 +221,19 @@ describe('useChess', () => {
 
             expect(mockOnLegalMove).to.have.beenCalledWith('Kc1');
             expect(mockOnThreefoldRepetition).to.have.beenCalled();
+        });
+
+        it('should call onInsufficientMaterial when the game ends due to insufficient material', () => {
+            mockInsufficientMaterial.mockReturnValue(true);
+
+            act(() => {
+                wrapper.find(TestComponent).props().move('Nxa4');
+            });
+
+            wrapper.update();
+
+            expect(mockOnLegalMove).to.have.beenCalledWith('Nxa4');
+            expect(mockOnInsufficientMaterial).to.have.beenCalled();
         });
 
         it('should update the history after a series of moves', () => {
