@@ -6,7 +6,9 @@ const propTypes = {
     onLegalMove: PropTypes.function,
     onIllegalMove: PropTypes.function,
     onGameOver: PropTypes.function,
-    onCheck: PropTypes.function
+    onCheck: PropTypes.function,
+    onCheckmate: PropTypes.function,
+    onDraw: PropTypes.function,
 };
 
 const useChess = ({
@@ -15,6 +17,7 @@ const useChess = ({
     onGameOver,
     onCheck,
     onCheckmate,
+    onDraw,
 } = {}) => {
     const game = useRef(null);
 
@@ -66,13 +69,22 @@ const useChess = ({
             if (onGameOver && getGame().game_over()) onGameOver();
             if (onCheck && getGame().in_check()) onCheck();
             if (onCheckmate && getGame().in_checkmate()) onCheckmate();
+            if (onDraw && getGame().in_draw()) onDraw();
 
             return;
         }
 
         if (onIllegalMove) onIllegalMove(move);
 
-    }, [game, onLegalMove, onIllegalMove, onGameOver]);
+    }, [
+        game,
+        onLegalMove,
+        onIllegalMove,
+        onGameOver,
+        onCheck,
+        onCheckmate,
+        onDraw,
+    ]);
 
     const reset = useCallback(() => {
         getGame().reset();
