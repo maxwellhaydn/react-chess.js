@@ -1,3 +1,23 @@
+/**
+ * Tests for the `useChess` React hook
+ *
+ * Copyright © 2020 Maxwell Carey
+ *
+ * This file is part of react-chess.js.
+ *
+ * react-chess.js is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3, as
+ * published by the Free Software Foundation.
+ *
+ * react-chess.js is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { mount } from 'enzyme';
@@ -11,12 +31,24 @@ const TestComponent = (props) => null;
 const mockOnLegalMove = jest.fn();
 const mockOnIllegalMove = jest.fn();
 const mockOnGameOver = jest.fn();
+const mockOnCheck = jest.fn();
+const mockOnCheckmate = jest.fn();
+const mockOnDraw = jest.fn();
+const mockOnStalemate = jest.fn();
+const mockOnThreefoldRepetition = jest.fn();
+const mockOnInsufficientMaterial = jest.fn();
 
 const App = () => {
     const props = useChess({
         onLegalMove: mockOnLegalMove,
         onIllegalMove: mockOnIllegalMove,
-        onGameOver: mockOnGameOver
+        onGameOver: mockOnGameOver,
+	onCheck: mockOnCheck,
+        onCheckmate: mockOnCheckmate,
+        onDraw: mockOnDraw,
+        onStalemate: mockOnStalemate,
+        onThreefoldRepetition: mockOnThreefoldRepetition,
+        onInsufficientMaterial: mockOnInsufficientMaterial,
     });
     return <TestComponent {...props} />;
 };
@@ -30,12 +62,24 @@ const mockFen = jest.fn().mockReturnValue(INITIAL_FEN);
 const mockReset = jest.fn();
 const mockUndo = jest.fn();
 const mockTurn = jest.fn().mockReturnValue('w');
+const mockCheck = jest.fn().mockReturnValue(false);
+const mockCheckmate = jest.fn().mockReturnValue(false);
+const mockDraw = jest.fn().mockReturnValue(false);
+const mockStalemate = jest.fn().mockReturnValue(false);
+const mockThreefoldRepetition = jest.fn().mockReturnValue(false);
+const mockInsufficientMaterial = jest.fn().mockReturnValue(false);
 
 jest.mock('chess.js', () => ({
     Chess: jest.fn().mockImplementation(() => ({
         move: mockMove,
         history: mockHistory,
         game_over: mockGameOver,
+        in_check: mockCheck,
+        in_checkmate: mockCheckmate,
+        in_draw: mockDraw,
+        in_stalemate: mockStalemate,
+        in_threefold_repetition: mockThreefoldRepetition,
+        insufficient_material: mockInsufficientMaterial,
         fen: mockFen,
         reset: mockReset,
         undo: mockUndo,
@@ -82,6 +126,12 @@ describe('useChess', () => {
             mockMove.mockReturnValue(true);
             mockHistory.mockReturnValue([]);
             mockGameOver.mockReturnValue(false);
+            mockCheck.mockReturnValue(false);
+            mockCheckmate.mockReturnValue(false);
+            mockDraw.mockReturnValue(false);
+            mockStalemate.mockReturnValue(false);
+            mockThreefoldRepetition.mockReturnValue(false);
+            mockInsufficientMaterial.mockReturnValue(false);
         });
 
         it('should call onLegalMove after a legal move is made', () => {
@@ -132,6 +182,84 @@ describe('useChess', () => {
 
             expect(mockOnLegalMove).to.have.beenCalledWith('a4');
             expect(mockOnGameOver).to.have.beenCalled();
+        });
+
+        it('should call onCheck when a move puts the next player in check', () => {
+            mockCheck.mockReturnValue(true);
+
+            act(() => {
+                wrapper.find(TestComponent).props().move('Qe7');
+            });
+
+            wrapper.update();
+
+            expect(mockOnLegalMove).to.have.beenCalledWith('Qe7');
+            expect(mockOnCheck).to.have.beenCalled();
+        });
+
+        it('should call onCheckmate when a move puts the next player in checkmate', () => {
+            mockCheckmate.mockReturnValue(true);
+
+            act(() => {
+                wrapper.find(TestComponent).props().move('Qh2');
+            });
+
+            wrapper.update();
+
+            expect(mockOnLegalMove).to.have.beenCalledWith('Qh2');
+            expect(mockOnCheckmate).to.have.beenCalled();
+        });
+
+        it('should call onDraw when the game ends in a draw', () => {
+            mockDraw.mockReturnValue(true);
+
+            act(() => {
+                wrapper.find(TestComponent).props().move('Bb6');
+            });
+
+            wrapper.update();
+
+            expect(mockOnLegalMove).to.have.beenCalledWith('Bb6');
+            expect(mockOnDraw).to.have.beenCalled();
+        });
+
+        it('should call onStalemate when the game ends in a stalemate', () => {
+            mockStalemate.mockReturnValue(true);
+
+            act(() => {
+                wrapper.find(TestComponent).props().move('e7');
+            });
+
+            wrapper.update();
+
+            expect(mockOnLegalMove).to.have.beenCalledWith('e7');
+            expect(mockOnStalemate).to.have.beenCalled();
+        });
+
+        it('should call onThreefoldRepetition when the game ends due to threefold repetition', () => {
+            mockThreefoldRepetition.mockReturnValue(true);
+
+            act(() => {
+                wrapper.find(TestComponent).props().move('Kc1');
+            });
+
+            wrapper.update();
+
+            expect(mockOnLegalMove).to.have.beenCalledWith('Kc1');
+            expect(mockOnThreefoldRepetition).to.have.beenCalled();
+        });
+
+        it('should call onInsufficientMaterial when the game ends due to insufficient material', () => {
+            mockInsufficientMaterial.mockReturnValue(true);
+
+            act(() => {
+                wrapper.find(TestComponent).props().move('Nxa4');
+            });
+
+            wrapper.update();
+
+            expect(mockOnLegalMove).to.have.beenCalledWith('Nxa4');
+            expect(mockOnInsufficientMaterial).to.have.beenCalled();
         });
 
         it('should update the history after a series of moves', () => {
