@@ -192,4 +192,8 @@ The current position of the pieces in FEN notation.
 
 The player whose turn it is (either 'b' for black or 'w' for white).
 
+## License
+
+react-chess.js is released under the [GPLv3 license](./LICENSE).
+
 [1]: https://github.com/jhlywa/chess.js
