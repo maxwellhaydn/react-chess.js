@@ -15,7 +15,8 @@ the chess.js API, including:
 
 * piece movement
 * move validation
-* game over callback
+* callbacks for check, checkmate, draw, stalemate, threefold repetition,
+  insufficient material, and game over
 * board position in FEN notation
 
 The rest of the API will be added in future releases.
@@ -24,13 +25,32 @@ The rest of the API will be added in future releases.
 
     npm install --save react-chess.js
 
-Alternatively, load it in a script tag from the CDN:
+React 16.8.0+ is a peer dependency, so you must install it yourself.
+
+## Importing
+
+    import useChess from 'react-chess.js'; // ES module
+    const useChess = require('react-chess.js'); // CommonJS
+
+### CDN
+
+If you don't want to import `useChess` into you application, you can load it
+from the CDN and use it globally via `window.useChess`:
 
     <script src="https://unpkg.com/react-chess.js"></script>
 
 ## Usage
 
-    import React, { useState } from 'react';
+The following example shows some of the features of the `useChess` hook.
+Each time you click the "Move" button, a move will be attempted, in the order
+e4, e5, Ba8, and Nf3. When a move is made, a message is logged to the console
+indicating whether it was legal or illegal. The current board position in
+Forsyth-Edwards notation, the player whose turn it is, and the list of moves
+made so far are shown and updated automatically after each move. Clicking "Undo"
+undoes the last move, while clicking "Reset" resets the board to the starting
+position.
+
+    import React from 'react';
     import useChess from 'react-chess.js';
 
     const App = (props) => {
@@ -63,8 +83,14 @@ Alternatively, load it in a script tag from the CDN:
 
 ### Arguments
 
-`useChess` takes an optional configuration object as an argument. The following
-properties are supported:
+`useChess` takes an optional configuration object as an argument. This lets you
+pass callbacks that are triggered on certain game events, like checkmate.
+
+Note that multiple callbacks may be triggered by the same move. For example, if
+you define `onLegalMove`, `onDraw`, and `onGameOver` and the game ends in a
+draw, all three callbacks will be fired after the last legal move in the game.
+
+The following callbacks are supported:
 
 #### onLegalMove
 
@@ -87,6 +113,42 @@ notation (e.g. 'Naxh1').
 `function()` _optional_
 
 Called when the game is over due to checkmate, stalemate, or a draw.
+
+#### onCheck
+
+`function()` _optional_
+
+Called when a move puts the next player in check.
+
+#### onCheckmate
+
+`function()` _optional_
+
+Called when a move puts the next player in checkmate.
+
+#### onDraw
+
+`function()` _optional_
+
+Called when the game is drawn due to the 50-move rule or insufficient material.
+
+#### onStalemate
+
+`function()` _optional_
+
+Called when a move puts the next player in stalemate.
+
+#### onThreefoldRepetition
+
+`function()` _optional_
+
+Called when the current board position has ocurred three or more times.
+
+#### onInsufficientMaterial
+
+`function()` _optional_
+
+Called when the game is drawn due to insufficient material (e.g. king vs king).
 
 ### Returns
 
@@ -115,7 +177,8 @@ Undo the last move.
 
 `Array`
 
-An array containing the moves that have been made so far in the game.
+An array containing the moves that have been made so far in the game, in
+standard algebraic notation.
 
 #### fen
 
