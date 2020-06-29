@@ -106,6 +106,12 @@ describe('useChess', () => {
             mockMove.mockReturnValue(true);
             mockHistory.mockReturnValue([]);
             mockGameOver.mockReturnValue(false);
+            mockCheck.mockReturnValue(false);
+            mockCheckmate.mockReturnValue(false);
+            mockDraw.mockReturnValue(false);
+            mockStalemate.mockReturnValue(false);
+            mockThreefoldRepetition.mockReturnValue(false);
+            mockInsufficientMaterial.mockReturnValue(false);
         });
 
         it('should call onLegalMove after a legal move is made', () => {

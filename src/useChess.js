@@ -2,18 +2,6 @@ import { useCallback, useEffect, useReducer, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Chess } from 'chess.js';
 
-const propTypes = {
-    onLegalMove: PropTypes.function,
-    onIllegalMove: PropTypes.function,
-    onGameOver: PropTypes.function,
-    onCheck: PropTypes.function,
-    onCheckmate: PropTypes.function,
-    onDraw: PropTypes.function,
-    onStalemate: PropTypes.function,
-    onThreefoldRepetition: PropTypes.function,
-    onInsufficientMaterial: PropTypes.function,
-};
-
 // Callbacks that can be triggered after a legal move, mapped to the
 // corresponding chess.js methods that indicate whether they should be triggered
 const legalMoveEffects = {
@@ -23,8 +11,16 @@ const legalMoveEffects = {
     onDraw: 'in_draw',
     onStalemate: 'in_stalemate',
     onThreefoldRepetition: 'in_threefold_repetition',
-    onInsufficientMaterial: 'in_threefold_repetition',
+    onInsufficientMaterial: 'insufficient_material',
 };
+
+// All props should be functions
+const propTypes = ['onLegalMove', 'onIllegalMove']
+    .concat(Object.keys(legalMoveEffects))
+    .reduce((allProps, prop) => {
+        allProps[prop] = PropTypes.func;
+        return allProps;
+    }, {});
 
 const useChess = (props) => {
     const game = useRef(null);
