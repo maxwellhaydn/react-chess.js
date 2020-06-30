@@ -103,15 +103,14 @@ argument: the move that was made, expressed in standard algebraic notation
 If the move puts the other player in check or checkmate, `move` will include '+'
 or '#', even if it was not included when the move was made. For example:
 
-    const { move } = useChess({
-        onLegalMove: moveMade => console.log(moveMade)
-    });
+    const handleLegalMove = moveMade => console.log(moveMade);
+    const { move } = useChess({ onLegalMove: handleLegalMove });
 
     move('e4');
     move('e5');
     move('Qf3');
     move('Nc6');
-    move('Qxf7'); // calls onLegalMove('Qxf7+')
+    move('Qxf7'); // calls handleLegalMove('Qxf7+')
 
 #### onIllegalMove
 
