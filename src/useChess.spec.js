@@ -123,7 +123,7 @@ describe('useChess', () => {
     describe('move', () => {
 
         beforeEach(() => {
-            mockMove.mockReturnValue(true);
+            mockMove.mockImplementation(move => ({ san: move }));
             mockHistory.mockReturnValue([]);
             mockGameOver.mockReturnValue(false);
             mockCheck.mockReturnValue(false);
@@ -135,13 +135,15 @@ describe('useChess', () => {
         });
 
         it('should call onLegalMove after a legal move is made', () => {
+            mockMove.mockReturnValue({ san: 'e4+' });
+
             act(() => {
                 wrapper.find(TestComponent).props().move('e4');
             });
 
             wrapper.update();
 
-            expect(mockOnLegalMove).to.have.beenCalledWith('e4');
+            expect(mockOnLegalMove).to.have.beenCalledWith('e4+');
             expect(mockOnIllegalMove).to.not.have.beenCalled();
         });
 
