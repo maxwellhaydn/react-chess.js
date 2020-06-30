@@ -3,6 +3,7 @@
   "version": "1.2.0",
   "description": "React hooks for the chess.js library",
   "main": "dist/react-chess.js",
+  "files": ["dist/"],
   "scripts": {
     "test": "jest",
     "test:watch": "npm test -- --watch",
