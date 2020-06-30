@@ -86,9 +86,9 @@ const useChess = (props) => {
     const [state, dispatch] = useReducer(reducer, undefined, getInitialState);
 
     const makeMove = useCallback((move) => {
-        let moveMade;
+        const moveMade = getGame().move(move);
 
-        if (moveMade = getGame().move(move)) {
+        if (moveMade) {
             dispatch({ type: 'update' });
 
             if (props.onLegalMove) props.onLegalMove(moveMade.san);
