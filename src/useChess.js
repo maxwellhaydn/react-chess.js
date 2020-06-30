@@ -86,10 +86,12 @@ const useChess = (props) => {
     const [state, dispatch] = useReducer(reducer, undefined, getInitialState);
 
     const makeMove = useCallback((move) => {
-        if (getGame().move(move)) {
+        let moveMade;
+
+        if (moveMade = getGame().move(move)) {
             dispatch({ type: 'update' });
 
-            if (props.onLegalMove) props.onLegalMove(move);
+            if (props.onLegalMove) props.onLegalMove(moveMade.san);
 
             // Call handlers for check, checkmate, draw, stalemate, etc.
             for (const [handler, method] of Object.entries(legalMoveEffects)) {

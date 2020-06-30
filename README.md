@@ -100,6 +100,19 @@ Called after a legal move has been made. The function is called with one
 argument: the move that was made, expressed in standard algebraic notation
 (e.g. 'Nf3').
 
+If the move puts the other player in check or checkmate, `move` will include '+'
+or '#', even if it was not included when the move was made. For example:
+
+    const { move } = useChess({
+        onLegalMove: moveMade => console.log(moveMade)
+    });
+
+    move('e4');
+    move('e5');
+    move('Qf3');
+    move('Nc6');
+    move('Qxf7'); // calls onLegalMove('Qxf7+')
+
 #### onIllegalMove
 
 `function(move)` _optional_
