@@ -38,18 +38,8 @@ const mockOnStalemate = jest.fn();
 const mockOnThreefoldRepetition = jest.fn();
 const mockOnInsufficientMaterial = jest.fn();
 
-const App = () => {
-    const props = useChess({
-        onLegalMove: mockOnLegalMove,
-        onIllegalMove: mockOnIllegalMove,
-        onGameOver: mockOnGameOver,
-	onCheck: mockOnCheck,
-        onCheckmate: mockOnCheckmate,
-        onDraw: mockOnDraw,
-        onStalemate: mockOnStalemate,
-        onThreefoldRepetition: mockOnThreefoldRepetition,
-        onInsufficientMaterial: mockOnInsufficientMaterial,
-    });
+const App = ({ options }) => {
+    const props = options ? useChess(options) : useChess();
     return <TestComponent {...props} />;
 };
 
@@ -87,13 +77,46 @@ jest.mock('chess.js', () => ({
     }))
 }));
 
-describe('useChess', () => {
+describe('without args', () => {
+
+    it('#5: should update history and throw no exceptions on move', () => {
+        mockHistory.mockReturnValue(['e4']);
+
+        const wrapper = mount(<App />);
+
+        expect(() => {
+            act(() => {
+                wrapper.find(TestComponent).props().move('e4');
+            });
+        })
+            .to.not.throw();
+
+        expect(wrapper.find(TestComponent))
+            .to.have.prop('history').deep.equal(['e4']);
+    });
+
+});
+
+describe('with args', () => {
 
     let wrapper;
 
     beforeEach(() => {
         jest.clearAllMocks();
-        wrapper = mount(<App />);
+        mockHistory.mockReturnValue([]);
+
+        const options = {
+            onLegalMove: mockOnLegalMove,
+            onIllegalMove: mockOnIllegalMove,
+            onGameOver: mockOnGameOver,
+            onCheck: mockOnCheck,
+            onCheckmate: mockOnCheckmate,
+            onDraw: mockOnDraw,
+            onStalemate: mockOnStalemate,
+            onThreefoldRepetition: mockOnThreefoldRepetition,
+            onInsufficientMaterial: mockOnInsufficientMaterial,
+        };
+        wrapper = mount(<App options={options} />);
     });
 
     describe('initial props', () => {
