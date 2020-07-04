@@ -42,7 +42,7 @@ const propTypes = ['onLegalMove', 'onIllegalMove']
         return allProps;
     }, {});
 
-const useChess = (props) => {
+const useChess = (props = {}) => {
     const game = useRef(null);
 
     // Lazily instantiate Chess object only once
